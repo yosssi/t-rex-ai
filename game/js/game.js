@@ -562,7 +562,6 @@ Runner.prototype = {
 
     if (!this.crashed) {
       this.tRex.update(deltaTime);
-      this.raq();
     }
 
     if (this.started && this.activated && !this.crashed && !this.paused) {
@@ -587,6 +586,8 @@ Runner.prototype = {
           score: Number(this.distanceMeter.digits.join(''))
         }
       }));
+    } else if (!this.crashed) {
+      this.raq();
     }
   },
 
@@ -2521,10 +2522,15 @@ ws.onopen = function(ev) {
 };
 
 ws.onmessage = function(ev) {
-  if (ev.data == ACTION_NONE) return;
-  Runner.instance_.onKeyDown({
-    keyCode: ev.data,
-    preventDefault: function(){}
-  });
+  if (Runner.instance_.started && Runner.instance_.activated && !Runner.instance_.crashed && !Runner.instance_.paused) {
+    Runner.instance_.raq();
+  }
+
+  if (ev.data != ACTION_NONE) {
+    Runner.instance_.onKeyDown({
+      keyCode: ev.data,
+      preventDefault: function(){}
+    });
+  }
 };
 
