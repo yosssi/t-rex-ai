@@ -807,6 +807,7 @@ Runner.prototype = {
       this.playCount++;
       this.runningTime = 0;
       this.activated = true;
+      this.paused = false;
       this.crashed = false;
       this.distanceRan = 0;
       this.setSpeed(this.config.SPEED);
