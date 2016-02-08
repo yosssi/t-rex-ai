@@ -1,6 +1,16 @@
 // Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+var PORT = '8080';
+
+var TYPE_WAIT_FOR_START = 1;
+var TYPE_UPDATE = 2;
+var TYPE_GAMEOVER = 3;
+
+var ACTION_NONE = '-1';
+
+var ws = new WebSocket('ws://127.0.0.1:' + PORT, 'ai');
+
 (function() {
 'use strict';
 /**
@@ -554,6 +564,30 @@ Runner.prototype = {
       this.tRex.update(deltaTime);
       this.raq();
     }
+
+    if (this.started && this.activated && !this.crashed && !this.paused) {
+      var obstacles = [];
+      for (var i = 0; i < this.horizon.obstacles.length; i++) {
+        obstacles.push({
+          x:      this.horizon.obstacles[i].xPos,
+          y:      this.horizon.obstacles[i].yPos,
+          width:  this.horizon.obstacles[i].width,
+          height: this.horizon.obstacles[i].typeConfig.height
+        });
+      }
+      ws.send(JSON.stringify({
+        type: TYPE_UPDATE,
+        data: {
+          trex: {
+            y: this.tRex.yPos,
+            ducking: this.tRex.ducking,
+            speedDrop: this.tRex.speedDrop,
+          },
+          obstacles: obstacles,
+          score: Number(this.distanceMeter.digits.join(''))
+        }
+      }));
+    }
   },
 
   /**
@@ -747,6 +781,8 @@ Runner.prototype = {
 
     // Reset the time clock.
     this.time = getTimeStamp();
+
+    ws.send(JSON.stringify({type: TYPE_GAMEOVER}));
   },
 
   stop: function() {
@@ -2479,4 +2515,15 @@ Horizon.prototype = {
 //start the game
 new Runner('.interstitial-wrapper');
 
+ws.onopen = function(ev) {
+  ws.send(JSON.stringify({type: TYPE_WAIT_FOR_START}));
+};
+
+ws.onmessage = function(ev) {
+  if (ev.data == ACTION_NONE) return;
+  Runner.instance_.onKeyDown({
+    keyCode: ev.data,
+    preventDefault: function(){}
+  });
+};
 
