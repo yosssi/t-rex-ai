@@ -2523,6 +2523,7 @@ ws.onopen = function(ev) {
 
 ws.onmessage = function(ev) {
   if (Runner.instance_.started && Runner.instance_.activated && !Runner.instance_.crashed && !Runner.instance_.paused) {
+    Runner.instance_.time = performance.now();
     Runner.instance_.raq();
   }
 
