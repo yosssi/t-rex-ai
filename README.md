@@ -1,2 +1,1 @@
-# t-rex-ai
-T-Rex Game AI
+# T-Rex Game AI
