@@ -2521,10 +2521,18 @@ ws.onopen = function(ev) {
   ws.send(JSON.stringify({type: TYPE_WAIT_FOR_START}));
 };
 
+var lastAction = ACTION_NONE;
+
 ws.onmessage = function(ev) {
   if (Runner.instance_.started && Runner.instance_.activated && !Runner.instance_.crashed && !Runner.instance_.paused) {
     Runner.instance_.time = performance.now();
     Runner.instance_.raq();
+  }
+
+  if (lastAction != ACTION_NONE && lastAction != ev.data) {
+    Runner.instance_.onKeyUp({
+      keyCode: lastAction
+    });
   }
 
   if (ev.data != ACTION_NONE) {
@@ -2533,5 +2541,7 @@ ws.onmessage = function(ev) {
       preventDefault: function(){}
     });
   }
+
+  lastAction = ev.data;
 };
 
