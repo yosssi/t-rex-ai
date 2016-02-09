@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 var PORT = '8080';
 
-var TYPE_WAIT_FOR_START = 1;
-var TYPE_UPDATE = 2;
-var TYPE_GAMEOVER = 3;
+var MSG_TYPE_READY = 1;
+var MSG_TYPE_STATE = 2;
+
+var IS_GAME_OVER_FALSE = 0;
+var IS_GAME_OVER_TRUE  = 1;
 
 var ACTION_NONE = '-1';
 
@@ -565,26 +567,7 @@ Runner.prototype = {
     }
 
     if (this.started && this.activated && !this.crashed && !this.paused) {
-      var obstacles = [];
-      for (var i = 0; i < this.horizon.obstacles.length; i++) {
-        obstacles.push({
-          x:      this.horizon.obstacles[i].xPos,
-          y:      this.horizon.obstacles[i].yPos,
-          width:  this.horizon.obstacles[i].width,
-          height: this.horizon.obstacles[i].typeConfig.height
-        });
-      }
-      ws.send(JSON.stringify({
-        type: TYPE_UPDATE,
-        data: {
-          trex: {
-            y: this.tRex.yPos,
-            ducking: this.tRex.ducking,
-            speedDrop: this.tRex.speedDrop,
-          },
-          obstacles: obstacles
-        }
-      }));
+      sendState(IS_GAME_OVER_FALSE);
     } else if (!this.crashed) {
       this.raq();
     }
@@ -782,7 +765,7 @@ Runner.prototype = {
     // Reset the time clock.
     this.time = getTimeStamp();
 
-    ws.send(JSON.stringify({type: TYPE_GAMEOVER}));
+    sendState(IS_GAME_OVER_TRUE);
   },
 
   stop: function() {
@@ -2516,8 +2499,33 @@ Horizon.prototype = {
 //start the game
 new Runner('.interstitial-wrapper');
 
+function sendState(isGameOver) {
+  var obstacles = [];
+  for (var i = 0; i < Runner.instance_.horizon.obstacles.length; i++) {
+    obstacles.push({
+      x:      Runner.instance_.horizon.obstacles[i].xPos,
+      y:      Runner.instance_.horizon.obstacles[i].yPos,
+      width:  Runner.instance_.horizon.obstacles[i].width,
+      height: Runner.instance_.horizon.obstacles[i].typeConfig.height
+    });
+  }
+
+  ws.send(JSON.stringify({
+    msgType: MSG_TYPE_STATE,
+    state: {
+      trex: {
+        y:         Runner.instance_.tRex.yPos,
+        ducking:   Runner.instance_.tRex.ducking,
+        speedDrop: Runner.instance_.tRex.speedDrop,
+      },
+      obstacles: obstacles,
+      isGameOver: isGameOver
+    }
+  }));
+}
+
 ws.onopen = function(ev) {
-  ws.send(JSON.stringify({type: TYPE_WAIT_FOR_START}));
+  ws.send(JSON.stringify({msgType: MSG_TYPE_READY}));
 };
 
 var lastAction = ACTION_NONE;

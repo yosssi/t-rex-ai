@@ -1,21 +1,21 @@
-dofile('controller.lua')
+dofile('environment.lua')
 
-WSServer = {}
+Server = {}
 
-WSServer.__index = WSServer
+Server.__index = Server
 
-function WSServer:new(opt)
+function Server:new(opt)
   local srv = {}
 
   setmetatable(srv, self)
 
   srv.port = opt.port
-  srv.ctrl = Controller:new()
+  srv.env  = Environment:new()
 
   return srv
 end
 
-function WSServer:listen()
+function Server:listen()
   local copas = require('copas')
 
   require('websocket').server.copas.listen{
@@ -25,7 +25,7 @@ function WSServer:listen()
         while true do
           local msg = ws:receive()
           if msg then
-            ws:send(self.ctrl:handle(msg))
+            ws:send(self.env:update(msg))
           else
             ws:close()
             return
