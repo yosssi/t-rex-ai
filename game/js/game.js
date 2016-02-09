@@ -6,9 +6,6 @@ var PORT = '8080';
 var MSG_TYPE_READY = 1;
 var MSG_TYPE_STATE = 2;
 
-var IS_GAME_OVER_FALSE = 0;
-var IS_GAME_OVER_TRUE  = 1;
-
 var ACTION_NONE = '-1';
 
 var ws = new WebSocket('ws://127.0.0.1:' + PORT, 'ai');
@@ -567,7 +564,7 @@ Runner.prototype = {
     }
 
     if (this.started && this.activated && !this.crashed && !this.paused) {
-      sendState(IS_GAME_OVER_FALSE);
+      sendState(false);
     } else if (!this.crashed) {
       this.raq();
     }
@@ -765,7 +762,7 @@ Runner.prototype = {
     // Reset the time clock.
     this.time = getTimeStamp();
 
-    sendState(IS_GAME_OVER_TRUE);
+    sendState(true);
   },
 
   stop: function() {
@@ -2519,7 +2516,8 @@ function sendState(isGameOver) {
         speedDrop: Runner.instance_.tRex.speedDrop,
       },
       obstacles: obstacles,
-      isGameOver: isGameOver
+      isGameOver: isGameOver,
+      score: Number(Runner.instance_.distanceMeter.digits.join(''))
     }
   }));
 }

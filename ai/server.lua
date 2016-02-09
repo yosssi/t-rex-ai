@@ -10,7 +10,7 @@ function Server:new(opt)
   setmetatable(srv, self)
 
   srv.port = opt.port
-  srv.env  = Environment:new()
+  srv.env  = Environment:new(opt)
 
   return srv
 end
@@ -25,7 +25,14 @@ function Server:listen()
         while true do
           local msg = ws:receive()
           if msg then
-            ws:send(self.env:update(msg))
+            local a = self.env:update(msg)
+            if a then
+              ws:send(a)
+            else
+              ws:close()
+              os.exit(0)
+              return
+            end
           else
             ws:close()
             return
