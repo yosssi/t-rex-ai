@@ -19,10 +19,8 @@ function Controller:handle(msg)
   if m.type == TYPE_WAIT_FOR_START then
     return ACTION_JUMP
   elseif m.type == TYPE_UPDATE then
-    print(m.data.score)
     return ACTION_NONE
   elseif m.type == TYPE_GAMEOVER then
-    print('game over!')
     return ACTION_NONE
   else
     return ACTION_NONE

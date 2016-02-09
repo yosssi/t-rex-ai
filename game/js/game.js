@@ -582,8 +582,7 @@ Runner.prototype = {
             ducking: this.tRex.ducking,
             speedDrop: this.tRex.speedDrop,
           },
-          obstacles: obstacles,
-          score: Number(this.distanceMeter.digits.join(''))
+          obstacles: obstacles
         }
       }));
     } else if (!this.crashed) {
