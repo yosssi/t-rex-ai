@@ -9,7 +9,7 @@ function b2n(b)
 end
 
 function state(t)
-  local s = torch.Tensor(1, S_SIZE)
+  local s = torch.Tensor(1, S_SIZE):zero()
 
   s[1][1] = t.trex.y
   s[1][2] = b2n(t.trex.ducking)

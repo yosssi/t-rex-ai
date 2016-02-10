@@ -61,17 +61,19 @@ function Environment:update(msg)
 
     local r = self:reward(sd)
 
-    self:debug(r, sd)
+    -- self:debug(r, sd)
 
-    self.ag:update(r, sd)
+    self.ag:update(r, sd, self.step)
 
     if self.maxSteps <= self.step then
       return nil
     end
 
     if isGameOver(sd) then
+      self:debug(r, sd)
       self:init()
       self.scores[self.ep] = self.score
+      self.ag:init()
       return A_NONE
     end
 
@@ -94,11 +96,9 @@ function Environment:update(msg)
 end
 
 function Environment:reward(s)
-  if self.s == nil then
-    return 0
-  elseif isGameOver(s) then
+  if isGameOver(s) then
     return -1
   else
-    return 1
+    return 0
   end
 end
