@@ -27,7 +27,7 @@ function Server:listen()
           if msg then
             local a = self.env:update(msg)
             if a then
-              ws:send(a)
+              ws:send(tostring(a))
             else
               ws:close()
               os.exit(0)

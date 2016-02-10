@@ -6,7 +6,8 @@ var PORT = '8080';
 var MSG_TYPE_READY = 1;
 var MSG_TYPE_STATE = 2;
 
-var ACTION_NONE = '-1';
+var A_NONE = 3;
+var A_KEYS = ['38', '40', '-1'];
 
 var ws = new WebSocket('ws://127.0.0.1:' + PORT, 'ai');
 
@@ -2526,10 +2527,16 @@ ws.onopen = function(ev) {
   ws.send(JSON.stringify({msgType: MSG_TYPE_READY}));
 };
 
-var lastAction = ACTION_NONE;
+var lastAction = A_NONE;
 
 ws.onmessage = function(ev) {
   if (Runner.instance_.crashed) {
+    if (lastAction != A_NONE) {
+      Runner.instance_.onKeyUp({
+        keyCode: A_KEYS[lastAction - 1]
+      });
+    }
+    lastAction = A_NONE;
     Runner.instance_.restart();
     return;
   }
@@ -2539,15 +2546,15 @@ ws.onmessage = function(ev) {
     Runner.instance_.raq();
   }
 
-  if (lastAction != ACTION_NONE && lastAction != ev.data) {
+  if (lastAction != A_NONE && lastAction != ev.data) {
     Runner.instance_.onKeyUp({
-      keyCode: lastAction
+      keyCode: A_KEYS[lastAction - 1]
     });
   }
 
-  if (ev.data != ACTION_NONE) {
+  if (ev.data != A_NONE) {
     Runner.instance_.onKeyDown({
-      keyCode: ev.data,
+      keyCode: A_KEYS[ev.data - 1],
       preventDefault: function(){}
     });
   }

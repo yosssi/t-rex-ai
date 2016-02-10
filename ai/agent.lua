@@ -1,5 +1,6 @@
 dofile('consts.lua')
 dofile('utils.lua')
+dofile('memory.lua')
 
 Agent = {}
 
@@ -10,7 +11,9 @@ function Agent:new(opt)
 
   setmetatable(ag, self)
 
-  ag.e = opt.e
+  ag.e             = opt.e
+  ag.m             = Memory:new(opt)
+  ag.minibatchSize = opt.minibatchSize
 
   self:init()
 
@@ -25,15 +28,15 @@ end
 function Agent:act(s)
   if isGameOver(s) then
     self:init()
-    return ACTION_NONE
+    return A_NONE
   end
 
   local a = nil
 
   if math.random() < self.e then
-    a = A[math.random(#A)]
+    a = math.random(A_NUM)
   else
-    a = ACTION_JUMP
+    a = A_JUMP
   end
 
   self.a = a
@@ -42,8 +45,12 @@ function Agent:act(s)
   return a
 end
 
-function Agent:update(r)
+function Agent:update(r, sd)
   if self.a == nil then
     return
   end
+end
+
+function Agent:learn()
+
 end

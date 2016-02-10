@@ -1,3 +1,5 @@
+dofile('consts.lua')
+
 function b2n(b)
   if b then
     return 1
@@ -7,7 +9,7 @@ function b2n(b)
 end
 
 function state(t)
-  local s = torch.Tensor(1, 16)
+  local s = torch.Tensor(1, S_SIZE)
 
   s[1][1] = t.trex.y
   s[1][2] = b2n(t.trex.ducking)
