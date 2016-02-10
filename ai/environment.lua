@@ -61,8 +61,6 @@ function Environment:update(msg)
 
     local r = self:reward(sd)
 
-    -- self:debug(r, sd)
-
     self.ag:update(r, sd, self.step)
 
     if self.maxSteps <= self.step then
@@ -98,6 +96,8 @@ end
 function Environment:reward(s)
   if isGameOver(s) then
     return -1
+  elseif didFend(s) then
+    return 1
   else
     return 0
   end

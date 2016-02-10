@@ -7,4 +7,4 @@ A_NONE = 3
 
 A_NUM = 3
 
-S_SIZE = 16
+S_SIZE = 12

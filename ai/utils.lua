@@ -20,11 +20,11 @@ function state(t)
     table.sort(t.obstacles, function(a, b) return a.x < b.x end)
   end
 
-  for i = 1, 3 do
-    local x = 0
-    local y = 0
-    local w = 0
-    local h = 0
+  for i = 1, 2 do
+    local x = 9999
+    local y = 9999
+    local w = 9999
+    local h = 9999
 
     if t.obstacles and i <= #t.obstacles then
       x = t.obstacles[i].x
@@ -44,4 +44,8 @@ end
 
 function isGameOver(s)
   return s[1][4] == 1
+end
+
+function didFend(s)
+  return s[1][5] < 0 or s[1][9] < 0
 end
